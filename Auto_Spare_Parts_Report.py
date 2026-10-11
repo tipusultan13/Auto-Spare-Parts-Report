@@ -5,13 +5,13 @@ import re
 
 # Import Data #
 
-application_status= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto Spare Parts Report/Data/application_status.csv")
-applications= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto Spare Parts Report/Data/applications.csv")
-compatibility= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto Spare Parts Report/Data/compatibility.csv")
-product_category= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto Spare Parts Report/Data/product_category.csv")
-seller= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto Spare Parts Report/Data/seller.csv")
-vehicle_type= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto Spare Parts Report/Data/vehicle_type.csv")
-vehicles= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto Spare Parts Report/Data/vehicles.csv")
+application_status= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto-Spare-Parts-Report/Data/application_status.csv")
+applications= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto-Spare-Parts-Report/Data/applications.csv")
+compatibility= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto-Spare-Parts-Report/Data/compatibility.csv")
+product_category= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto-Spare-Parts-Report/Data/product_category.csv")
+seller= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto-Spare-Parts-Report/Data/seller.csv")
+vehicle_type= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto-Spare-Parts-Report/Data/vehicle_type.csv")
+vehicles= pd.read_csv("/Users/tipusultan/Documents/GitHub/Auto-Spare-Parts-Report/Data/vehicles.csv")
 
 ## Prepare Data ##
 
@@ -91,4 +91,16 @@ applications["year"] = pd.to_datetime(applications["app_register_date"], errors=
 print(applications)
 
 # Save the progress #
-applications.to_csv("applications.csv", index=False)
+#applications.to_csv("applications.csv", index=False)
+
+# Manufacturer view # 
+applications_v2 = (
+    applications
+    .assign(manufacturer=applications["manufacturer"].str.split(" / "))
+    .explode("manufacturer")
+    .reset_index(drop=True)
+)
+
+applications_v2["price_unique"] = applications_v2["price_usd"].where(~applications_v2.duplicated("app_id"), 0)
+applications_v2.to_csv("applications_v2.csv", index=False)
+print(applications_v2)
